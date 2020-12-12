@@ -1,4 +1,25 @@
-const NodeMediaServer = require('./');
+// pkg chinaMediaServer node12-win-x64, node12-macos-x64
+
+const NodeMediaServer = require('./node_media_server');
+const os              = require("os"); 
+const ffmpegFlags  = '[hls_time=4:hls_list_size=24:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=1]';
+const fissionModel = [{
+                        ab: "96k",
+                        vb: "400k",
+                        vs: "424x240",
+                        timecode: "01:02:03:04"
+                      }];
+
+function ffmpegLocation()
+{
+  let currentOS = os.type();
+  console.log('');
+  console.log("siamo su %s", currentOS );
+  if      (currentOS == "Darwin") { return "/usr/local/bin/ffmpeg"}
+  else if (currentOS == "Windows_NT") { return "C:/ffmpeg/bin/ffmpeg.exe"}
+  else {console.log('porcoddò');}
+
+}
 
 const config = {
   rtmp: {
@@ -17,15 +38,113 @@ const config = {
   },
   http: {
     port: 8000,
-    mediaroot: './media',
+    mediaroot: '../videoTemp/media/',
     webroot: './www',
     allow_origin: '*',
     api: true
   },
-  https: {
-    port: 8443,
-    key: './privatekey.pem',
-    cert: './certificate.pem',
+  // https: {
+  //   port: 8443,
+  //   key: './privatekey.pem',
+  //   cert: './certificate.pem',
+  // },
+  trans: {
+    ffmpeg: ffmpegLocation(),
+    tasks: [
+      {
+        app: 'live1',
+        hls: true,
+        hlsFlags: ffmpegFlags,
+        dash: false,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      },
+      {
+        app: 'live2',
+        hls: true,
+        hlsFlags: ffmpegFlags,
+        dash: false,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      },
+      {
+        app: 'live3',
+        hls: true,
+        hlsFlags:ffmpegFlags ,
+        dash: false,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      },
+      {
+        app: 'live4',
+        hls: true,
+        hlsFlags: ffmpegFlags ,
+        dash: false,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      },
+      {
+        app: 'live5',
+        hls: true,
+        hlsFlags: ffmpegFlags,
+        dash: false,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      },
+      {
+        app: 'live6',
+        hls: true,
+        hlsFlags: ffmpegFlags,
+        dash: false,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      },
+      {
+        app: 'live7',
+        hls: true,
+        hlsFlags:ffmpegFlags ,
+        dash: false,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      },
+      {
+        app: 'live8',
+        hls: true,
+        hlsFlags:ffmpegFlags,
+        dash: false,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      }
+     ]
+  }, 
+  fission: {
+    ffmpeg: ffmpegLocation(),
+    tasks: [
+      {
+        rule: "live1/*",
+        model: fissionModel
+      },
+      {
+        rule: "live2/*",
+        model:fissionModel
+      },
+      {
+        rule: "live3/*",
+        model: fissionModel
+      },
+      {
+        rule: "live4/*",
+        model: fissionModel
+      },
+      {
+        rule: "live5/*",
+        model: fissionModel
+      },
+      {
+        rule: "live6/*",
+        model: fissionModel
+      },
+      {
+        rule: "live7/*",
+        model: fissionModel
+      },
+      {
+        rule: "live8/*",
+        model: fissionModel
+      }
+    ]
   },
   auth: {
     api: true,
@@ -34,7 +153,7 @@ const config = {
     play: false,
     publish: false,
     secret: 'nodemedia2017privatekey'
-  }
+  } 
 };
 
 
@@ -83,3 +202,11 @@ nms.on('donePlay', (id, StreamPath, args) => {
   console.log('[NodeEvent on donePlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
 });
 
+
+
+/*    {
+  ab: "96k",
+  vb: "1000k",
+  vs: "854x480",
+  vf: "25"
+}*/
