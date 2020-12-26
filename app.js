@@ -2,12 +2,20 @@
 
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
-const ffmpegFlags  = '[hls_time=4:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=1]';
+const ffmpegFlags  = '[hls_time=4:hls_list_size=20:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=1]';
 const fissionModel = [{
                         ab: "96k",
                         vb: "400k",
                         vs: "424x240",
-                        timecode: "01:02:03:04"
+                        vcParam: ["timecode", "01:02:03:04"],
+                        vf: "25"
+                      },
+                      {
+                        ab: "96k",
+                        vb: "1000k",
+                        vcParam: ["timecode", "01:02:03:04"],
+                        vs: "854x480",
+                        vf: "25"
                       }];
 
 function ffmpegLocation()
@@ -24,7 +32,7 @@ function ffmpegLocation()
 const config = {
   rtmp: {
     port: 1935,
-    chunk_size: 60000,
+    chunk_size: 4000,
     gop_cache: true,
     ping: 30,
     ping_timeout: 60,
@@ -54,59 +62,43 @@ const config = {
       {
         app: 'live1',
         hls: true,
-        hlsFlags: ffmpegFlags,
-        dash: false,
-        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+        hlsFlags: ffmpegFlags
       },
       {
         app: 'live2',
         hls: true,
-        hlsFlags: ffmpegFlags,
-        dash: false,
-        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+        hlsFlags: ffmpegFlags
       },
       {
         app: 'live3',
         hls: true,
-        hlsFlags:ffmpegFlags ,
-        dash: false,
-        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+        hlsFlags:ffmpegFlags 
       },
       {
         app: 'live4',
         hls: true,
-        hlsFlags: ffmpegFlags ,
-        dash: false,
-        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+        hlsFlags: ffmpegFlags,
       },
       {
         app: 'live5',
         hls: true,
-        hlsFlags: ffmpegFlags,
-        dash: false,
-        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+        hlsFlags: ffmpegFlags
       },
       {
         app: 'live6',
         hls: true,
-        hlsFlags: ffmpegFlags,
-        dash: false,
-        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+        hlsFlags: ffmpegFlags
       },
       {
         app: 'live7',
         hls: true,
-        hlsFlags:ffmpegFlags ,
-        dash: false,
-        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+        hlsFlags:ffmpegFlags 
       },
       {
         app: 'live8',
         hls: true,
-        hlsFlags:ffmpegFlags,
-        dash: false,
-        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
-      }
+        hlsFlags:ffmpegFlags
+      }      
      ]
   }, 
   fission: {

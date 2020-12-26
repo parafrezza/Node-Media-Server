@@ -60,8 +60,8 @@ class NodeHttpServer {
         app.use(['/api/*', '/static/*', '/admin/*'], basicAuth(this.config.auth.api_user, this.config.auth.api_pass));
       }
       app.use('/api/streams', streamsRoute(context));
-      app.use('/api/server', serverRoute(context));
-      app.use('/api/relay', relayRoute(context));
+      app.use('/api/server',  serverRoute(context));
+      app.use('/api/relay',   relayRoute(context));
     }
 
     app.use(Express.static(path.join(__dirname + '/public')));
@@ -88,8 +88,10 @@ class NodeHttpServer {
   }
 
   run() {
-    this.httpServer.listen(this.port, () => {
+    this.httpServer.listen(this.port, () => 
+    {
       Logger.log(`Node Media Http Server started on port: ${this.port}`);
+      Logger.log(`Serving directory: ${this.mediaroot}`);
     });
 
     this.httpServer.on('error', (e) => {
