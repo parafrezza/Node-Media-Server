@@ -210,3 +210,5 @@ nms.on('donePlay', (id, StreamPath, args) => {
   vs: "854x480",
   vf: "25"
 }*/
+
+//s 0 - b: v: 1024k - bufsize 1024k - maxrate 1024k - minrate 1024k - preset veryfast - profile: v baseline - tune film - g 48 - x264opts no - scenecut - acodec aac - b: a 192k - ac 2 - ar 44100 - af "aresample=async=1:min_hard_comp=0.100000:first_pts=0" - f mp4 output.mp4
