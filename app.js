@@ -2,21 +2,22 @@
 
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
-const ffmpegFlags  = '[hls_time=2:hls_list_size=20:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=1]';
+const ffmpegFlags  = '[hls_time=4:hls_list_size=20:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=1]';
 const fissionModel = [{
                         ab: "96k",
                         vb: "400k",
                         vs: "424x240",
                         vcParam: ["timecode", "01:02:03:04"],
                         vf: "25"
-                      },
-                      {
-                        ab: "96k",
-                        vb: "1000k",
-                        vcParam: ["timecode", "01:02:03:04"],
-                        vs: "854x480",
-                        vf: "25"
-                      }];
+                      }
+                      // {
+                      //   ab: "96k",
+                      //   vb: "1000k",
+                      //   vcParam: ["timecode", "01:02:03:04"],
+                      //   vs: "854x480",
+                      //   vf: "25"
+                      // }
+                    ];
 
 function ffmpegLocation()
 {
@@ -34,31 +35,39 @@ const config = {
     port: 1935,
     chunk_size: 4000,
     gop_cache: true,
-    ping: 30,
-    ping_timeout: 60,
-	/*
+    ping: 25,
+    ping_timeout: 50,
     ssl: {
       port: 443,
       key: './privatekey.pem',
       cert: './certificate.pem',
     }
-	*/
   },
   http: {
-    port: 8000,
+    port: 9000,
     mediaroot: '../videoTemp/media/',
-    webroot: './www',
+    webroot: '../videoTemp/media/',
     allow_origin: '*',
     api: true
   },
-  // https: {
-  //   port: 8443,
-  //   key: './privatekey.pem',
-  //   cert: './certificate.pem',
-  // },
+  https: {
+    port: 8443,
+    key: './privatekey.pem',
+    cert: './certificate.pem',
+  },
   trans: {
     ffmpeg: ffmpegLocation(),
     tasks: [
+      {
+        app: 'pgm',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      },
+      {
+        app: 'mvw',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      },
       {
         app: 'live1',
         hls: true,
@@ -104,6 +113,14 @@ const config = {
   fission: {
     ffmpeg: ffmpegLocation(),
     tasks: [
+      {
+        rule: "pgm/*",
+        model: fissionModel
+      },
+      {
+        rule: "mvw/*",
+        model: fissionModel
+      },
       {
         rule: "live1/*",
         model: fissionModel
@@ -202,5 +219,3 @@ nms.on('donePlay', (id, StreamPath, args) => {
   vs: "854x480",
   vf: "25"
 }*/
-
-//s 0 - b: v: 1024k - bufsize 1024k - maxrate 1024k - minrate 1024k - preset veryfast - profile: v baseline - tune film - g 48 - x264opts no - scenecut - acodec aac - b: a 192k - ac 2 - ar 44100 - af "aresample=async=1:min_hard_comp=0.100000:first_pts=0" - f mp4 output.mp4
