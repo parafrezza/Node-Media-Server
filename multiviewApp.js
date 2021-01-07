@@ -2,7 +2,7 @@
 
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
-const ffmpegFlags  = '[hls_time=2:hls_list_size=10:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=1]';
+const ffmpegFlags  = '[hls_time=2:hls_list_size=10:master_pl_name=../pirulino.m3u8 out%v.m3u8:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
 const fissionModel = [{
                         ab: "96k",
                         vb: "400k",
