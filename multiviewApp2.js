@@ -18,6 +18,26 @@ const fissionModel = [{
                       //   vf: "25"
                       // }
                     ];
+const fissionModel2 = [
+  {
+    ab: "128k",
+    vb: "1500k",
+    vs: "720x1280",
+    vf: "25",
+  },
+  {
+    ab: "96k",
+    vb: "1000k",
+    vs: "480x854",
+    vf: "25",
+  },
+  {
+    ab: "64k",
+    vb: "600k",
+    vs: "360x640",
+    vf: "25",
+  },
+];
 
 function ffmpegLocation()
 {
@@ -65,6 +85,11 @@ const config = {
       },
       {
         app: 'mvw',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      },
+      {
+        app: 'mvw2',
         hls: true,
         hlsFlags: ffmpegFlags
       },
@@ -120,6 +145,10 @@ const config = {
       {
         rule: "mvw/*",
         model: fissionModel
+      },
+      {
+        rule: "mvw2/*",
+        model: fissionModel2
       },
       {
         rule: "live1/*",
