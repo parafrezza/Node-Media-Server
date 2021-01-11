@@ -3,22 +3,14 @@
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
 const ffmpegFlags  = '[hls_time=2:hls_list_size=10:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
-const fissionModel = [{
-                        ab: "96k",
-                        vb: "400k",
-                        vs: "424x240",
-                        // vcParam: ["timecode", "01:02:03:04"],
-                        vf: "25"
-                      }
-                      // {
-                      //   ab: "96k",
-                      //   vb: "1000k",
-                      //   vcParam: ["timecode", "01:02:03:04"],
-                      //   vs: "854x480",
-                      //   vf: "25"
-                      // }
-                    ];
-const fissionModel2 = [
+
+const fissionModel = [
+  {
+    ab: "128k",
+    vb: "14000k",
+    vs: "3840x2160",
+    vf: "25",
+  },
   {
     ab: "128k",
     vb: "4500k",
@@ -79,107 +71,17 @@ const config = {
     ffmpeg: ffmpegLocation(),
     tasks: [
       {
-        app: 'pgm',
-        hls: true,
-        hlsFlags: ffmpegFlags
-      },
-      {
-        app: 'mvw',
-        hls: true,
-        hlsFlags: ffmpegFlags
-      },
-      {
         app: 'champagne',
         hls: true,
         hlsFlags: ffmpegFlags
-      },
-      {
-        app: 'live1',
-        hls: true,
-        hlsFlags: ffmpegFlags
-      },
-      {
-        app: 'live2',
-        hls: true,
-        hlsFlags: ffmpegFlags
-      },
-      {
-        app: 'live3',
-        hls: true,
-        hlsFlags:ffmpegFlags 
-      },
-      {
-        app: 'live4',
-        hls: true,
-        hlsFlags: ffmpegFlags,
-      },
-      {
-        app: 'live5',
-        hls: true,
-        hlsFlags: ffmpegFlags
-      },
-      {
-        app: 'live6',
-        hls: true,
-        hlsFlags: ffmpegFlags
-      },
-      {
-        app: 'live7',
-        hls: true,
-        hlsFlags:ffmpegFlags 
-      },
-      {
-        app: 'live8',
-        hls: true,
-        hlsFlags:ffmpegFlags
-      }      
+      }    
      ]
   }, 
   fission: {
     ffmpeg: ffmpegLocation(),
     tasks: [
       {
-        rule: "pgm/*",
-        model: fissionModel
-      },
-      {
-        rule: "mvw/*",
-        model: fissionModel
-      },
-      {
         rule: "champagne/*",
-        model: fissionModel2
-      },
-      {
-        rule: "live1/*",
-        model: fissionModel
-      },
-      {
-        rule: "live2/*",
-        model:fissionModel
-      },
-      {
-        rule: "live3/*",
-        model: fissionModel
-      },
-      {
-        rule: "live4/*",
-        model: fissionModel
-      },
-      {
-        rule: "live5/*",
-        model: fissionModel
-      },
-      {
-        rule: "live6/*",
-        model: fissionModel
-      },
-      {
-        rule: "live7/*",
-        model: fissionModel
-      },
-      {
-        rule: "live8/*",
         model: fissionModel
       }
     ]
