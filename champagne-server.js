@@ -1,4 +1,5 @@
 // pkg chinaMediaServer node12-win-x64, node12-macos-x64
+//C:\Program Files\Apache24\bin> .\httpd.exe
 
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
