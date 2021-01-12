@@ -45,7 +45,7 @@ function ffmpegLocation()
 
 const config = {
   rtmp: {
-    port: 1935,
+    port: 1936,
     chunk_size: 4000,
     gop_cache: true,
     ping: 25,
@@ -89,11 +89,11 @@ const config = {
   },
   auth: {
     api: true,
-    api_user: 'admin',
-    api_pass: 'admin',
+    api_user: 'riccardo',
+    api_pass: 'extratech',
     play: false,
     publish: false,
-    secret: 'nodemedia2017privatekey'
+    secret: 'extratech'
   } 
 };
 
