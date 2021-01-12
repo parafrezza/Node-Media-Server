@@ -52,7 +52,7 @@ const config = {
     ping: 25,
     ping_timeout: 50,
     ssl: {
-      port: 443,
+      port: 9443,
       key: './privatekey.pem',
       cert: './certificate.pem',
     }
