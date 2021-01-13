@@ -2,12 +2,12 @@
 
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
-const ffmpegFlags  = '[hls_time=4:hls_list_size=20:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=1]';
+const ffmpegFlags  = '[hls_time=2:hls_list_size=10:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
 const fissionModel = [{
                         ab: "96k",
                         vb: "400k",
                         vs: "424x240",
-                        vcParam: ["timecode", "01:02:03:04"],
+                        // vcParam: ["timecode", "01:02:03:04"],
                         vf: "25"
                       }
                       // {
