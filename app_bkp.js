@@ -1,101 +1,150 @@
 // pkg chinaMediaServer node12-win-x64, node12-macos-x64
-//C:\Program Files\Apache24\bin> .\httpd.exe
 
 const NodeMediaServer = require('./node_media_server');
-const os              = require("os"); 
-const ffmpegFlags  = '[hls_time=2:hls_list_size=10:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
-
-const fissionModel = [
-  {
-    ab: "128k",
-    vb: "14000k",
-    vs: "3840x1440",
-    vf: "25",
-  },
-  {
-    ab: "128k",
-    vb: "4500k",
-    vs: "1920x720",
-    vf: "25",
-  },
-  {
-    ab: "128k",
-    vb: "3000k",
-    vs: "1280x480",
-    vf: "25",
-  },
-  {
-    ab: "96k",
-    vb: "1000k",
-    vs: "854x320",
-    vf: "25",
-  }
-];
-
-function ffmpegLocation()
+const os = require("os");
+const ffmpegFlags = '[hls_time=4:hls_list_size=20:hls_flags=delete_segments:hls_flags=program_date_time]';
+const fissionModel = [{
+  ab: "96k",
+  vb: "400k",
+  vs: "424x240",
+  vcParam: ["timecode", "01:02:03:04"],
+  vf: "25"
+},
 {
+  ab: "96k",
+  vb: "1000k",
+  vcParam: ["timecode", "01:02:03:04"],
+  vs: "854x480",
+  vf: "25"
+}];
+
+function ffmpegLocation() {
   let currentOS = os.type();
   console.log('');
-  console.log("siamo su %s", currentOS );
-  if      (currentOS == "Darwin") { return "/usr/local/bin/ffmpeg"}
-  else if (currentOS == "Windows_NT") { return "C:/ffmpeg/bin/ffmpeg.exe"}
-  else if (currentOS == "Linux")     {return "/usr/bin/ffmpeg"}
-  else {console.log('porcoddò');}
+  console.log("siamo su %s", currentOS);
+  if (currentOS == "Darwin") { return "/usr/local/bin/ffmpeg" }
+  else if (currentOS == "Windows_NT") { return "C:/ffmpeg/bin/ffmpeg.exe" }
+  else { console.log('porcoddò'); }
 
 }
 
 const config = {
   rtmp: {
-    port: 1936,
+    port: 1935,
     chunk_size: 4000,
     gop_cache: true,
-    ping: 25,
-    ping_timeout: 50,
-    ssl: {
-      port: 9443,
-      key: './privatekey.pem',
-      cert: './certificate.pem',
-    }
+    ping: 30,
+    ping_timeout: 60,
+    /*
+      ssl: {
+        port: 443,
+        key: './privatekey.pem',
+        cert: './certificate.pem',
+      }
+    */
   },
   http: {
-    port: 9000,
+    port: 8000,
     mediaroot: '../videoTemp/media/',
-    webroot: '../videoTemp/media/',
+    webroot: './www',
     allow_origin: '*',
     api: true
   },
-  https: {
-    port: 8443,
-    key: './privatekey.pem',
-    cert: './certificate.pem',
-  },
+  // https: {
+  //   port: 8443,
+  //   key: './privatekey.pem',
+  //   cert: './certificate.pem',
+  // },
   trans: {
     ffmpeg: ffmpegLocation(),
     tasks: [
       {
-        app: 'champagne',
+        app: 'live1',
         hls: true,
         hlsFlags: ffmpegFlags
-      }    
-     ]
-  }, 
+      },
+      {
+        app: 'live2',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      },
+      {
+        app: 'live3',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      },
+      {
+        app: 'live4',
+        hls: true,
+        hlsFlags: ffmpegFlags,
+      },
+      {
+        app: 'live5',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      },
+      {
+        app: 'live6',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      },
+      {
+        app: 'live7',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      },
+      {
+        app: 'live8',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      }
+    ]
+  },
   fission: {
     ffmpeg: ffmpegLocation(),
     tasks: [
       {
-        rule: "champagne/*",
+        rule: "live1/*",
+        model: fissionModel
+      },
+      {
+        rule: "live2/*",
+        model: fissionModel
+      },
+      {
+        rule: "live3/*",
+        model: fissionModel
+      },
+      {
+        rule: "live4/*",
+        model: fissionModel
+      },
+      {
+        rule: "live5/*",
+        model: fissionModel
+      },
+      {
+        rule: "live6/*",
+        model: fissionModel
+      },
+      {
+        rule: "live7/*",
+        model: fissionModel
+      },
+      {
+        rule: "live8/*",
         model: fissionModel
       }
     ]
   },
   auth: {
     api: true,
-    api_user: 'riccardo',
-    api_pass: 'extratech',
+    api_user: 'admin',
+    api_pass: 'admin',
     play: false,
     publish: false,
-    secret: 'extratech'
-  } 
+    secret: 'nodemedia2017privatekey'
+  }
 };
 
 
@@ -152,16 +201,3 @@ nms.on('donePlay', (id, StreamPath, args) => {
   vs: "854x480",
   vf: "25"
 }*/
-
-/*
-#EXTM3U
-#EXT-X-VERSION:6
-#EXT-X-STREAM-INF:BANDWIDTH=15000000,AVERAGE-BANDWIDTH=14000000,RESOLUTION=3840x2160,CLOSED-CAPTIONS=NONE,CODECS="avc1.42e00a,mp4a.40.2"
-/media/champagne/feed1/index.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=4800000,AVERAGE-BANDWIDTH=4500000,RESOLUTION=1920x1080,CLOSED-CAPTIONS=NONE,CODECS="avc1.42e00a,mp4a.40.2"
-/media/champagne/feed1_1080/index.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=3500000,AVERAGE-BANDWIDTH=3000000,RESOLUTION=1280x720,CLOSED-CAPTIONS=NONE,CODECS="avc1.42e00a,mp4a.40.2"
-/media/champagne/feed1_720/index.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=1100000,AVERAGE-BANDWIDTH=1000000,RESOLUTION=854x480,CLOSED-CAPTIONS=NONE,CODECS="avc1.42e00a,mp4a.40.2"
-/media/champagne/feed1_480/index.m3u8
-*/
