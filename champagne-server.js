@@ -3,7 +3,7 @@
 
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
-const ffmpegFlags  = '[hls_time=2:hls_list_size=10:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
+const ffmpegFlags  = '[hls_time=2:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
 
 const fissionModel = [
   {
