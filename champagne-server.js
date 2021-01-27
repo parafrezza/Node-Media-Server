@@ -64,11 +64,11 @@ const config = {
     allow_origin: '*',
     api: true
   },
-  https: {
-    port: 8443,
-    key: './privatekey.pem',
-    cert: './certificate.pem',
-  },
+  // https: {
+  //   port: 8443,
+  //   key: './privatekey.pem',
+  //   cert: './certificate.pem',
+  // },
   trans: {
     ffmpeg: ffmpegLocation(),
     tasks: [
