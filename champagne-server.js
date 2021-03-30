@@ -1,45 +1,20 @@
 // pkg chinaMediaServer node12-win-x64, node12-macos-x64
 //C:\Program Files\Apache24\bin> .\httpd.exe
-
+const fissionModel = require('./fissionModel.json');
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
-const ffmpegFlags  = '[hls_time=2:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
-
-const fissionModel = [
-  {
-    ab: "128k",
-    vb: "14000k",
-    vs: "3840x1440",
-    vf: "25",
-  },
-  {
-    ab: "128k",
-    vb: "4500k",
-    vs: "1920x720",
-    vf: "25",
-  },
-  {
-    ab: "128k",
-    vb: "3000k",
-    vs: "1280x480",
-    vf: "25",
-  },
-  {
-    ab: "96k",
-    vb: "1000k",
-    vs: "854x320",
-    vf: "25",
-  }
-];
+const ffmpegFlags     = '[hls_time=2:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
+const perFavore       = require('./masterPlaylistMaker');
+const location        = '../videoTemp/media/';
 
 function ffmpegLocation()
 {
   let currentOS = os.type();
   console.log('');
   console.log("siamo su %s", currentOS );
-  if      (currentOS == "Darwin") { return "/usr/local/bin/ffmpeg"}
+  if      (currentOS == "Darwin")     { return "/usr/local/bin/ffmpeg"}
   else if (currentOS == "Windows_NT") { return "C:/ffmpeg/bin/ffmpeg.exe"}
-  else if (currentOS == "Linux")     {return "/usr/bin/ffmpeg"}
+  else if (currentOS == "Linux")  {return "/usr/bin/ffmpeg"}
   else {console.log('porcoddò');}
 
 }
@@ -59,7 +34,7 @@ const config = {
   },
   http: {
     port: 9000,
-    mediaroot: '../videoTemp/media/',
+    mediaroot: location,
     webroot: '../videoTemp/media/',
     allow_origin: '*',
     api: true
@@ -69,14 +44,20 @@ const config = {
   //   key: './privatekey.pem',
   //   cert: './certificate.pem',
   // },
-  trans: {
+  trans:
+   {
     ffmpeg: ffmpegLocation(),
     tasks: [
       {
         app: 'champagne',
         hls: true,
         hlsFlags: ffmpegFlags
-      }    
+      },
+      {
+        app: 'champagneRedux',
+        hls: true,
+        hlsFlags: ffmpegFlags
+      }  
      ]
   }, 
   fission: {
@@ -84,7 +65,11 @@ const config = {
     tasks: [
       {
         rule: "champagne/*",
-        model: fissionModel
+        model: fissionModel.standardFissionModel
+      },
+      {
+        rule: "champagneRedux/*",
+        model: fissionModel.reduxFissionModel
       }
     ]
   },
@@ -106,6 +91,7 @@ nms.on('preConnect', (id, args) => {
   console.log('[NodeEvent on preConnect]', `id=${id} args=${JSON.stringify(args)}`);
   // let session = nms.getSession(id);
   // session.reject();
+  perFavore.datiPerlaPlaylist(app, location);
 });
 
 nms.on('postConnect', (id, args) => {
@@ -132,8 +118,8 @@ nms.on('donePublish', (id, StreamPath, args) => {
 
 nms.on('prePlay', (id, StreamPath, args) => {
   console.log('[NodeEvent on prePlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
-  // let session = nms.getSession(id);
-  // session.reject();
+  perFavore.fammeNaPlaylist(StreamPath);
+  ;
 });
 
 nms.on('postPlay', (id, StreamPath, args) => {

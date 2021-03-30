@@ -11,7 +11,7 @@ const { getFFmpegVersion, getFFmpegUrl } = require('./node_core_utils');
 const fs = require('fs');
 const _ = require('lodash');
 const mkdirp = require('mkdirp');
-
+ 
 class NodeTransServer {
   constructor(config) {
     this.config = config;
@@ -50,6 +50,7 @@ class NodeTransServer {
     context.nodeEvent.on('postPublish', this.onPostPublish.bind(this));
     context.nodeEvent.on('donePublish', this.onDonePublish.bind(this));
     Logger.log(`Node Media Trans Server started for apps: [ ${apps}] , MediaRoot: ${this.config.http.mediaroot}, ffmpeg version: ${version}`);
+   
   }
 
   onPostPublish(id, streamPath, args) {
