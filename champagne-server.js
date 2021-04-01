@@ -1,24 +1,12 @@
 // pkg chinaMediaServer node12-win-x64, node12-macos-x64
 //C:\Program Files\Apache24\bin> .\httpd.exe
-const fissionModel = require('./fissionModel.json');
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
 const ffmpegFlags     = '[hls_time=2:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=datetime]';
 const perFavore       = require('./masterPlaylistMaker');
+const fissionModel    = require('./fissionModel.json');
 const location        = '../videoTemp/media/';
-
-function ffmpegLocation()
-{
-  let currentOS = os.type();
-  console.log('');
-  console.log("siamo su %s", currentOS );
-  if      (currentOS == "Darwin")     { return "/usr/local/bin/ffmpeg"}
-  else if (currentOS == "Windows_NT") { return "C:/ffmpeg/bin/ffmpeg.exe"}
-  else if (currentOS == "Linux")  {return "/usr/bin/ffmpeg"}
-  else {console.log('porcoddò');}
-
-}
-
+const ffmpegLocation  = findFfmpegLocation();
 const config = {
   rtmp: {
     port: 1936,
@@ -35,7 +23,7 @@ const config = {
   http: {
     port: 9000,
     mediaroot: location,
-    webroot: '../videoTemp/media/',
+    webroot: location,
     allow_origin: '*',
     api: true
   },
@@ -46,7 +34,7 @@ const config = {
   // },
   trans:
    {
-    ffmpeg: ffmpegLocation(),
+    ffmpeg: ffmpegLocation,
     tasks: [
       {
         app: 'champagne',
@@ -61,7 +49,7 @@ const config = {
      ]
   }, 
   fission: {
-    ffmpeg: ffmpegLocation(),
+    ffmpeg: findFfmpegLocation(),
     tasks: [
       {
         rule: "champagne/*",
@@ -82,16 +70,15 @@ const config = {
     secret: 'extratech'
   } 
 };
-
+let isMasterPlaylistDone = false;
 
 let nms = new NodeMediaServer(config)
 nms.run();
-
 nms.on('preConnect', (id, args) => {
   console.log('[NodeEvent on preConnect]', `id=${id} args=${JSON.stringify(args)}`);
   // let session = nms.getSession(id);
   // session.reject();
-  perFavore.datiPerlaPlaylist(app, location);
+  // console.log(args);
 });
 
 nms.on('postConnect', (id, args) => {
@@ -104,8 +91,6 @@ nms.on('doneConnect', (id, args) => {
 
 nms.on('prePublish', (id, StreamPath, args) => {
   console.log('[NodeEvent on prePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
-  // let session = nms.getSession(id);
-  // session.reject();
 });
 
 nms.on('postPublish', (id, StreamPath, args) => {
@@ -118,8 +103,11 @@ nms.on('donePublish', (id, StreamPath, args) => {
 
 nms.on('prePlay', (id, StreamPath, args) => {
   console.log('[NodeEvent on prePlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
-  perFavore.fammeNaPlaylist(StreamPath);
-  ;
+  if(!isMasterPlaylistDone)
+  {
+    isMasterPlaylistDone = true;
+    perFavore.fammeNaPlaylist(StreamPath, location);
+  }  
 });
 
 nms.on('postPlay', (id, StreamPath, args) => {
@@ -131,6 +119,16 @@ nms.on('donePlay', (id, StreamPath, args) => {
 });
 
 
+function findFfmpegLocation()
+{
+  let currentOS = os.type();
+  console.log('');
+  console.log("siamo su %s", currentOS );
+  if      (currentOS == "Darwin")     { return "/usr/local/bin/ffmpeg"}
+  else if (currentOS == "Windows_NT") { return "C:/ffmpeg/bin/ffmpeg.exe"}
+  else if (currentOS == "Linux")  {return "/usr/bin/ffmpeg"}
+  else {console.log('porcoddò');}
+}
 
 /*    {
   ab: "96k",
