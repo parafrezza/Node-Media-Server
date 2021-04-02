@@ -2,7 +2,7 @@
   "name": "node-media-server",
   "version": "2.2.4",
   "description": "A Node.js implementation of RTMP Server",
-  "main": "champagne-server.js",
+  "main": "./lib/champagne-server.js",
   "scripts": {
     "test": "node app.js"
   },
@@ -22,9 +22,11 @@
   },
   "homepage": "https://github.com/illuspas/Node-Media-Server#readme",
   "dependencies": {
+    "aws-sdk": "^2.878.0",
     "basic-auth-connect": "^1.0.0",
     "chalk": "^2.4.2",
     "dateformat": "^3.0.3",
+    "dotenv": "^8.2.0",
     "express": "^4.16.4",
     "lodash": ">=4.17.13",
     "mkdirp": "1.0.3",
