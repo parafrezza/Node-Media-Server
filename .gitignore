@@ -33,4 +33,4 @@ node_modules
 *.mpd
 
 *.vscode
-*.env
+.env
