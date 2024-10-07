@@ -3,7 +3,8 @@ require('dotenv').config();
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
 const path            = require("path"); 
-const ffmpegFlags     = '[hls_time=4:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=epoch]';
+const ffmpegFlags     = require('./HLS_flags.js').ffmpeg.flags.join(':')
+// const ffmpegFlags     = '[hls_time=4:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=epoch]';
 const perFavore       = require('./masterPlaylistMaker');
 const avvueseTePrego  = require('./awsUpload');
 const mongo           = require('./nms_mongo.js');
@@ -15,9 +16,10 @@ const ffmpegLocation  = findFfmpegLocation();
 
 const IS_DEBUG = process.env.NODE_ENV === 'development';
 
-console.log('\n\n\n\n\n    CHAMPAGNE!\n');
+console.log('\n\nCHAMPAGNE!\n');
 console.log('is debug is '+ IS_DEBUG);
 console.log('current HLS flags:');
+console.log(ffmpegFlags);
 
 
 
