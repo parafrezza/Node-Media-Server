@@ -10,6 +10,8 @@ const { spawn } = require('child_process');
 const dateFormat = require('dateformat');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
+const path            = require("path"); 
+
 
 const isHlsFile = (filename) => filename.endsWith('.ts') || filename.endsWith('.m3u8')
 const isTemFiles = (filename) => filename.endsWith('.tmp')
@@ -54,8 +56,9 @@ class NodeTransSession extends EventEmitter {
       this.conf.hlsFlags = this.getConfig('hlsFlags') || '';
       let hlsFileName = 'index.m3u8';
       let mapHls = `${this.conf.hlsFlags}${ouPath}/${hlsFileName}|`;
+      // mapHls = this.conf.hlsFlags+path.join(ouPath,hlsFileName);
       mapStr += mapHls;
-      Logger.log('[Transmuxing HLS] ' + this.conf.streamPath + ' to ' + ouPath + '/' + hlsFileName);
+      Logger.log('[Transmuxing HLS] ' + this.conf.streamPath + ' to ' + path.join(ouPath,hlsFileName));
     }
     if (this.conf.dash) {
       this.conf.dashFlags = this.conf.dashFlags ? this.conf.dashFlags : '';
@@ -76,6 +79,7 @@ class NodeTransSession extends EventEmitter {
     this.ffmpeg_exec = spawn(this.conf.ffmpeg, argv);
     this.ffmpeg_exec.on('error', (e) => {
       Logger.ffdebug(e);
+      //console.log('ffmpeg direbbe: %s', e);
     });
 
     this.ffmpeg_exec.stdout.on('data', (data) => {
@@ -84,6 +88,8 @@ class NodeTransSession extends EventEmitter {
 
     this.ffmpeg_exec.stderr.on('data', (data) => {
       Logger.ffdebug(`FF_LOG:${data}`);
+      //console.log('ffmpeg direbbe: %s', data);
+
     });
 
     this.ffmpeg_exec.on('close', (code) => {

@@ -3,6 +3,7 @@ require('dotenv').config();
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
 const path            = require("path"); 
+const chalk           = require ('chalk');
 // const ffmpegFlags     = require('./HLS_flags.js').ffmpeg.flags.join(':')
 const ffmpegFlags     = '[hls_time=4:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=epoch]';
 const perFavore       = require('./masterPlaylistMaker');
@@ -25,6 +26,7 @@ console.log(ffmpegFlags);
 
 
 const config = {
+  logType: 3,
   rtmp: {
     port: 1935,
     chunk_size: 16384,
@@ -51,6 +53,7 @@ const config = {
   // },
   trans:
    {
+   
     ffmpeg: ffmpegLocation,
     tasks: [
       {
@@ -125,8 +128,6 @@ nms.on('prePublish', (id, StreamPath, args) =>
   let streaming_type        = StreamPath.split('/')[1];  //l'ultimo identificativo della stringa di streaming -> champagne = live
   let streaming_key         = StreamPath.split('/')[2];
   let titolo                = streaming_key
-  // let titolo                = streaming_key.split('_')[0];
-  // let numero_videi          = streaming_key.split('_')[1];
   let master_playlist_name  = streaming_key + ".m3u8";
 
   dati_del_nuovo_fantastico_streaming = 
@@ -171,12 +172,6 @@ nms.on('prePublish', (id, StreamPath, args) =>
         console.log('\'ica lo so come è andata');
       });
   }
-
-  // let sp                 = StreamPath.split('/');
-  // let app                = sp[1];
-  // let programName        = sp[2];
-  // let programDirectory   = path.join(location, app, programName)
-  // avvueseTePrego.syncala(app, programName, programDirectory)
 });
 nms.on('postPublish', (id, StreamPath, args) => {
   console.log('[NodeEvent on postPublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
@@ -208,7 +203,11 @@ function findFfmpegLocation()
 (function areWeProducing()
 {
   console.log('porco '+ process.env.PORCO);
-  if (process.env.NODE_ENV=='development') {console.log('Development!'); return false;}
+  if (process.env.NODE_ENV=='development')
+  {
+    console.log(chalk.blue('Development!'));
+    return false;
+  }
   else {return true;}
 })()
 
