@@ -3,10 +3,11 @@ require('dotenv').config();
 const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
 const path            = require("path"); 
-const ffmpegFlags     = require('./HLS_flags.js').ffmpeg.flags.join(':')
-// const ffmpegFlags     = '[hls_time=4:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=epoch]';
+// const ffmpegFlags     = require('./HLS_flags.js').ffmpeg.flags.join(':')
+const ffmpegFlags     = '[hls_time=4:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=epoch]';
 const perFavore       = require('./masterPlaylistMaker');
 const avvueseTePrego  = require('./awsUpload');
+const monitorami      = require('./monitor.js');
 const mongo           = require('./nms_mongo.js');
 const fissionModel    = require('./fissionModel.json');
 const { log } = require('console');
@@ -160,7 +161,7 @@ nms.on('prePublish', (id, StreamPath, args) =>
         });
       }
     });
-
+    monitorami.startMonitoring(location);
     console.log('i dati che scriverei su Mongo sono:\n %s ', dati_del_nuovo_fantastico_streaming)
 
     mongo.setNewLiveStream(dati_del_nuovo_fantastico_streaming)

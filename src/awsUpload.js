@@ -188,9 +188,8 @@ const watchIt = function(args)
             Key: key,
             Body: fileStream,
         };
-        console.log('che metterei nel bucket:\n%s',params.Bucket );
-
-        console.log('il nome del file su S3 sarebbe quindi:\n%s',params.Key );
+        // console.log('che metterei nel bucket:\n%s',params.Bucket );
+        // console.log('il nome del file su S3 sarebbe quindi:\n%s',params.Key );
 
         s3.upload(params, (err, data) => {
         if (err) {
