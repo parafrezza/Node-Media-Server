@@ -174,29 +174,171 @@ module.exports.chiudiIlWatch = function ()
 
 const watchIt = function(args)
 {
+ 
     console.log(args); // mi darà il path dello streaming -> tipo /champagne/dajeforte
     let localDir = path.join(videoTemp, args.split('/')[1]);
     let remoteDir = localDir.split(path.sep).pop()
     console.log('osserverei %s\ne la uploaderei nella directory:\n%s\n\n', localDir, remoteDir);
-    // Helper function to upload a file to S3
-    function uploadFile(filePath) {
-        const fileStream = fs.createReadStream(filePath);
-        const key = path.relative(localDir, filePath).replace(/\\/g, '/'); // Normalize for S3
-        const params = 
-        {
-            Bucket: path.posix.join(secchio,remoteDir),
-            Key: key,
-            Body: fileStream,
-        };
-        // console.log('che metterei nel bucket:\n%s',params.Bucket );
-        // console.log('il nome del file su S3 sarebbe quindi:\n%s',params.Key );
+ 
+    // Start watching the directory
+    const watcher = chokidar.watch(localDir, {
+        ignored: /(^|[\/\\])\../, // Ignore dotfiles
+        persistent: true,
+        ignoreInitial: false, // Process files already existing
+    });
 
-        s3.upload(params, (err, data) => {
-        if (err) {
-            console.error(`Durane il watch it -> Error uploading ${filePath}:`, err);
-        } else {
-            console.log(`Uploaded ${filePath} to ${data.Location}`);
+    let addCount = 0;
+    let changeCount = 0;
+    let unlinkCount = 0;
+
+    // Variables to accumulate counts over a minute
+    let minuteAddCount = 0;
+    let minuteChangeCount = 0;
+    let minuteUnlinkCount = 0;
+
+    // Counters for uploads
+    let uploadedCount = 0;
+    let minuteUploadedCount = 0;
+
+    // Counters for deletions from S3
+    let deletedFromS3Count = 0;
+    let minuteDeletedFromS3Count = 0;
+
+    // **Total counters**
+    let totalAddCount = 0;
+    let totalChangeCount = 0;
+    let totalUnlinkCount = 0;
+    let totalUploadedCount = 0;
+    let totalDeletedFromS3Count = 0;
+
+    // **Data uploaded counters**
+    let uploadedDataBytes = 0;
+    let minuteUploadedDataBytes = 0;
+    let totalUploadedDataBytes = 0;
+
+    // Counter to keep track of seconds elapsed
+    let secondCounter = 0;
+
+    watcher
+        .on('add', (filePath) => {
+            addCount++;
+            totalAddCount++;
+            uploadFile(filePath);
+        })
+        .on('change', (filePath) => {
+            changeCount++;
+            totalChangeCount++;
+            uploadFile(filePath);
+        })
+        .on('unlink', (filePath) => {
+            if (process.env.SYNCH_DELETE) {
+                unlinkCount++;
+                totalUnlinkCount++;
+                deleteFile(filePath);
+            }
+        })
+        .on('error', (error) => {
+            console.error(`Watcher error: ${error}`);
+        });
+
+    // Log counts every second and accumulate for minute average
+    const intervalId = setInterval(() => {
+        if (
+            addCount > 0 ||
+            changeCount > 0 ||
+            unlinkCount > 0 ||
+            uploadedCount > 0 ||
+            deletedFromS3Count > 0 ||
+            uploadedDataBytes > 0
+        ) {
+            const uploadedDataMegabits = (uploadedDataBytes * 8) / 1_000_000; // Convert bytes to megabits
+            console.log(
+                `Files added: ${addCount}, changed: ${changeCount}, removed: ${unlinkCount}, uploaded: ${uploadedCount}, deleted from S3: ${deletedFromS3Count}, data uploaded: ${uploadedDataMegabits.toFixed(2)} Mb`
+            );
         }
+
+        // Accumulate counts for minute average
+        minuteAddCount += addCount;
+        minuteChangeCount += changeCount;
+        minuteUnlinkCount += unlinkCount;
+        minuteUploadedCount += uploadedCount;
+        minuteDeletedFromS3Count += deletedFromS3Count;
+        minuteUploadedDataBytes += uploadedDataBytes;
+
+        // Reset the per-second counts
+        addCount = 0;
+        changeCount = 0;
+        unlinkCount = 0;
+        uploadedCount = 0;
+        deletedFromS3Count = 0;
+        uploadedDataBytes = 0;
+
+        secondCounter++;
+
+        // Every 60 seconds, calculate and log the average and total counts
+        if (secondCounter >= 60) {
+            const avgAdd = (minuteAddCount / 60).toFixed(2);
+            const avgChange = (minuteChangeCount / 60).toFixed(2);
+            const avgUnlink = (minuteUnlinkCount / 60).toFixed(2);
+            const avgUploaded = (minuteUploadedCount / 60).toFixed(2);
+            const avgDeletedFromS3 = (minuteDeletedFromS3Count / 60).toFixed(2);
+            const avgUploadedDataMegabits = ((minuteUploadedDataBytes * 8) / 1_000_000 / 60).toFixed(2);
+
+            const totalUploadedDataMegabits = (totalUploadedDataBytes * 8) / 1_000_000;
+
+            console.log(`\nSummary over the last minute:`);
+            console.log(
+                `Average per second - Files added: ${avgAdd}, changed: ${avgChange}, removed: ${avgUnlink}, uploaded: ${avgUploaded}, deleted from S3: ${avgDeletedFromS3}, data uploaded: ${avgUploadedDataMegabits} Mb`
+            );
+
+            console.log(`Total counts:`);
+            console.log(
+                `Files added: ${totalAddCount}, changed: ${totalChangeCount}, removed: ${totalUnlinkCount}, uploaded: ${totalUploadedCount}, deleted from S3: ${totalDeletedFromS3Count}, total data uploaded: ${totalUploadedDataMegabits.toFixed(2)} Mb\n`
+            );
+
+            // Reset minute counters and second counter
+            minuteAddCount = 0;
+            minuteChangeCount = 0;
+            minuteUnlinkCount = 0;
+            minuteUploadedCount = 0;
+            minuteDeletedFromS3Count = 0;
+            minuteUploadedDataBytes = 0;
+            secondCounter = 0;
+        }
+    }, 1000);
+
+    // Upload function
+    function uploadFile(filePath) {
+        fs.stat(filePath, (err, stats) => {
+            if (err) {
+                console.error(`Error getting file stats for ${filePath}:`, err);
+                return;
+            }
+
+            const fileSizeBytes = stats.size;
+
+            const fileStream = fs.createReadStream(filePath);
+            const key = path.relative(localDir, filePath).replace(/\\/g, '/'); // Normalize for S3
+            const params = {
+                Bucket: path.posix.join(secchio, remoteDir),
+                Key: key,
+                Body: fileStream,
+            };
+
+            s3.upload(params, (err, data) => {
+                if (err) {
+                    console.error(`Error uploading ${filePath}:`, err);
+                } else {
+                    // Successful upload
+                    uploadedCount++; // Increment per-second counter
+                    totalUploadedCount++; // Increment total counter
+
+                    // Update data uploaded counters
+                    uploadedDataBytes += fileSizeBytes;
+                    minuteUploadedDataBytes += fileSizeBytes;
+                    totalUploadedDataBytes += fileSizeBytes;
+                }
+            });
         });
     }
 
@@ -205,44 +347,22 @@ const watchIt = function(args)
         const key = path.relative(localDir, filePath).replace(/\\/g, '/');
 
         const params = {
-        Bucket: path.join(secchio,remoteDir),
-        Key: key,
+            Bucket: path.posix.join(secchio, remoteDir),
+            Key: key,
         };
 
         s3.deleteObject(params, (err, data) => {
-        if (err) {
-            console.error(`Error deleting ${filePath} from S3:`, err);
-        } else {
-            console.log(`Deleted ${filePath} from S3`);
-        }
+            if (err) {
+                console.error(`Error deleting ${filePath} from S3:`, err);
+            } else {
+                // Successful deletion
+                deletedFromS3Count++; // Increment per-second counter
+                totalDeletedFromS3Count++; // Increment total counter
+            }
         });
     }
 
-    // Start watching the directory
-    const watcher = chokidar.watch(localDir, {
-        ignored: /(^|[\/\\])\../, // Ignore dotfiles
-        persistent: true,
-        ignoreInitial: false, // Process files already existing
-    });
 
-    watcher
-        .on('add', (filePath) => {
-        console.log(`File ${filePath} has been added`);
-        uploadFile(filePath);
-        })
-        .on('change', (filePath) => {
-        console.log(`File ${filePath} has been changed`);
-        uploadFile(filePath);
-        })
-        .on('unlink', (filePath) => {
-        if (process.env.SYNCH_DELETE)
-        {
-            console.log(`File ${filePath} has been removed`);
-            deleteFile(filePath);
-        }
-        })
-        .on('error', (error) => {
-        console.error(`Watcher error: ${error}`);
-        });
+    
 }
 // module.exports.syncala('champagne', 'pool', 'D:\devss\lo studio della tivvuu\web and alike\regieRemote\videoTemp\media\champagne\')

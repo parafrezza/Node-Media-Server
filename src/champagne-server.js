@@ -4,26 +4,23 @@ const NodeMediaServer = require('./node_media_server');
 const os              = require("os"); 
 const path            = require("path"); 
 const chalk           = require ('chalk');
-// const ffmpegFlags     = require('./HLS_flags.js').ffmpeg.flags.join(':')
-const ffmpegFlags     = '[hls_time=4:hls_list_size=30:hls_flags=delete_segments:hls_flags=program_date_time:hls_start_number_source=epoch]';
+const ffmpegFlags     = '[' + require('./HLS_flags.js').ffmpeg.flags.join(':') + ']'
 const perFavore       = require('./masterPlaylistMaker');
 const avvueseTePrego  = require('./awsUpload');
 const monitorami      = require('./monitor.js');
 const mongo           = require('./nms_mongo.js');
 const fissionModel    = require('./fissionModel.json');
-const { log } = require('console');
+const { log }         = require('console');
 const location        = process.env.VIDEO_TEMP;
 avvueseTePrego.settaLaVideoTemp(location);
 const ffmpegLocation  = findFfmpegLocation();
 
 const IS_DEBUG = process.env.NODE_ENV === 'development';
 
-console.log('\n\nCHAMPAGNE!\n');
+console.log('\nCHAMPAGNE!\n');
 console.log('is debug is '+ IS_DEBUG);
 console.log('current HLS flags:');
 console.log(ffmpegFlags);
-
-
 
 const config = {
   logType: 3,
@@ -70,11 +67,11 @@ const config = {
         hls: true,
         hlsFlags: ffmpegFlags
       },
-      {
-        app: 'record',
-        mp4: true,
-        mp4Flags: '[movflags=frag_keyframe+empty_moov]',
-      }
+      // {
+      //   app: 'record',
+      //   mp4: true,
+      //   mp4Flags: '[movflags=frag_keyframe+empty_moov]',
+      // }
      ]
   }, 
   fission: {
@@ -174,18 +171,18 @@ nms.on('prePublish', (id, StreamPath, args) =>
   }
 });
 nms.on('postPublish', (id, StreamPath, args) => {
-  console.log('[NodeEvent on postPublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
+  // console.log('[NodeEvent on postPublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
 
 });
 nms.on('donePublish', (id, StreamPath, args) => {
-  console.log('[NodeEvent on donePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
+  // console.log('[NodeEvent on donePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
 });
 nms.on('prePlay', (id, StreamPath, args) => {
-  console.log('[NodeEvent on prePlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
+  // console.log('[NodeEvent on prePlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
 
 });
 nms.on('postPlay', (id, StreamPath, args) => {
-  console.log('[NodeEvent on postPlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
+  // console.log('[NodeEvent on postPlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
 });
 nms.on('donePlay', (id, StreamPath, args) => {
   console.log('[NodeEvent on donePlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);

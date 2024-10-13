@@ -44,7 +44,8 @@ function startMonitoring(rootDirectory) {
                 fileTimestamps[folder].push(now);
 
                 // Limit the number of stored timestamps to prevent memory overflow
-                if (fileTimestamps[folder].length > 100) {
+                if (fileTimestamps[folder].length > 100) 
+                {
                     fileTimestamps[folder].shift(); // Remove the oldest timestamp
                 }
 
