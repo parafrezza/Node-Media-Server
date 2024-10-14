@@ -7,7 +7,10 @@ const fs = require('fs');
  * Function to start monitoring HLS folders
  * @param {string} rootDirectory - The root HLS directory
  */
-function startMonitoring(rootDirectory) {
+function startMonitoring(rootDirectory)
+{
+    console.log('comincio il monitoraggio di: %s', rootDirectory);
+
     // Verify that the root directory exists
     if (!fs.existsSync(rootDirectory)) {
         console.error(`Root directory does not exist: ${rootDirectory}`);

@@ -12,8 +12,8 @@ const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path            = require("path"); 
 
-
-const isHlsFile = (filename) => filename.endsWith('.ts') || filename.endsWith('.m3u8')
+const convertToUnixPath = (filePath) => filePath.replace(/\\/g, '/');
+const isHlsFile  = (filename) => filename.endsWith('.ts') || filename.endsWith('.m3u8')
 const isTemFiles = (filename) => filename.endsWith('.tmp')
 const isDashFile = (filename) => filename.endsWith('.mpd') || filename.endsWith('.m4s')
 
@@ -55,10 +55,12 @@ class NodeTransSession extends EventEmitter {
     if (this.conf.hls) {
       this.conf.hlsFlags = this.getConfig('hlsFlags') || '';
       let hlsFileName = 'index.m3u8';
-      let mapHls = `${this.conf.hlsFlags}${ouPath}/${hlsFileName}|`;
-      // mapHls = this.conf.hlsFlags+path.join(ouPath,hlsFileName);
+      let ouPath_comformed = convertToUnixPath(ouPath)
+      let mapHls = `${this.conf.hlsFlags}${ouPath_comformed}/${hlsFileName}|`;
+      // let mapHls = this.conf.hlsFlags+path.join(ouPath,hlsFileName)+'|';
       mapStr += mapHls;
-      Logger.log('[Transmuxing HLS] ' + this.conf.streamPath + ' to ' + path.join(ouPath,hlsFileName));
+      Logger.log('[Transmuxing HLS] ' + this.conf.streamPath + ' to ' + path.join(ouPath_comformed,hlsFileName))+'|';
+      Logger.log('[Transmuxing HLS] ' + mapStr);
     }
     if (this.conf.dash) {
       this.conf.dashFlags = this.conf.dashFlags ? this.conf.dashFlags : '';
@@ -79,7 +81,7 @@ class NodeTransSession extends EventEmitter {
     this.ffmpeg_exec = spawn(this.conf.ffmpeg, argv);
     this.ffmpeg_exec.on('error', (e) => {
       Logger.ffdebug(e);
-      //console.log('ffmpeg direbbe: %s', e);
+      console.log('ffmpeg direbbe: %s', e);
     });
 
     this.ffmpeg_exec.stdout.on('data', (data) => {
