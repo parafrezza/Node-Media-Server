@@ -98,8 +98,7 @@ const config = {
 };
 let isMasterPlaylistDone = false;
 let isBucketDone         = false;
-let volte_che_succede = 0;
-
+// let volte_che_succede   = 0;
 
 let nms = new NodeMediaServer(config)
 nms.run();
