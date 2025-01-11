@@ -26,9 +26,9 @@ const s3Client = require('s3-node-client');
 const { log }  = require('console');
 const client = s3Client.createClient(
     {
-        maxAsyncS3: 20,     // this is the default
-        s3RetryCount: 3,    // this is the default
-        s3RetryDelay: 200, // this is the default
+        maxAsyncS3: 10,     // this is the default
+        s3RetryCount: 2,    // this is the default
+        s3RetryDelay: 60, // this is the default
         multipartUploadThreshold: 20971520, // this is the default (20 MB)
         multipartUploadSize: 15728640, // this is the default (15 MB)
         s3Options: {
@@ -244,12 +244,12 @@ const watchIt = function(args)
     // Log counts every second and accumulate for minute average
     const intervalId = setInterval(() => {
         if (
-            addCount > 0 ||
-            changeCount > 0 ||
-            unlinkCount > 0 ||
-            uploadedCount > 0 ||
+            addCount           > 0 ||
+            changeCount        > 0 ||
+            unlinkCount        > 0 ||
+            uploadedCount      > 0 ||
             deletedFromS3Count > 0 ||
-            uploadedDataBytes > 0
+            uploadedDataBytes  > 0
         ) {
             const uploadedDataMegabits = (uploadedDataBytes * 8) / 1_000_000; // Convert bytes to megabits
             console.log(
@@ -258,30 +258,30 @@ const watchIt = function(args)
         }
 
         // Accumulate counts for minute average
-        minuteAddCount += addCount;
-        minuteChangeCount += changeCount;
-        minuteUnlinkCount += unlinkCount;
-        minuteUploadedCount += uploadedCount;
+        minuteAddCount           += addCount;
+        minuteChangeCount        += changeCount;
+        minuteUnlinkCount        += unlinkCount;
+        minuteUploadedCount      += uploadedCount;
         minuteDeletedFromS3Count += deletedFromS3Count;
-        minuteUploadedDataBytes += uploadedDataBytes;
+        minuteUploadedDataBytes  += uploadedDataBytes;
 
         // Reset the per-second counts
-        addCount = 0;
-        changeCount = 0;
-        unlinkCount = 0;
-        uploadedCount = 0;
+        addCount           = 0;
+        changeCount        = 0;
+        unlinkCount        = 0;
+        uploadedCount      = 0;
         deletedFromS3Count = 0;
-        uploadedDataBytes = 0;
+        uploadedDataBytes  = 0;
 
         secondCounter++;
 
         // Every 60 seconds, calculate and log the average and total counts
         if (secondCounter >= 60) {
-            const avgAdd = (minuteAddCount / 60).toFixed(2);
-            const avgChange = (minuteChangeCount / 60).toFixed(2);
-            const avgUnlink = (minuteUnlinkCount / 60).toFixed(2);
-            const avgUploaded = (minuteUploadedCount / 60).toFixed(2);
-            const avgDeletedFromS3 = (minuteDeletedFromS3Count / 60).toFixed(2);
+            const avgAdd                  = (minuteAddCount           / 60).toFixed(2);
+            const avgChange               = (minuteChangeCount        / 60).toFixed(2);
+            const avgUnlink               = (minuteUnlinkCount        / 60).toFixed(2);
+            const avgUploaded             = (minuteUploadedCount      / 60).toFixed(2);
+            const avgDeletedFromS3        = (minuteDeletedFromS3Count / 60).toFixed(2);
             const avgUploadedDataMegabits = ((minuteUploadedDataBytes * 8) / 1_000_000 / 60).toFixed(2);
 
             const totalUploadedDataMegabits = (totalUploadedDataBytes * 8) / 1_000_000;
@@ -297,13 +297,13 @@ const watchIt = function(args)
             );
 
             // Reset minute counters and second counter
-            minuteAddCount = 0;
-            minuteChangeCount = 0;
-            minuteUnlinkCount = 0;
-            minuteUploadedCount = 0;
+            minuteAddCount           = 0;
+            minuteChangeCount        = 0;
+            minuteUnlinkCount        = 0;
+            minuteUploadedCount      = 0;
             minuteDeletedFromS3Count = 0;
-            minuteUploadedDataBytes = 0;
-            secondCounter = 0;
+            minuteUploadedDataBytes  = 0;
+            secondCounter            = 0;
         }
     }, 1000);
 
@@ -316,7 +316,6 @@ const watchIt = function(args)
             }
 
             const fileSizeBytes = stats.size;
-
             const fileStream = fs.createReadStream(filePath);
             const key = path.relative(localDir, filePath).replace(/\\/g, '/'); // Normalize for S3
             const params = {

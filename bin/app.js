@@ -10,8 +10,8 @@ let argv = require('minimist')(process.argv.slice(2),
       'https_port': 's',
     },
     default:{
-      'rtmp_port': 1935,
-      'http_port': 8000,
+      'rtmp_port':  1935,
+      'http_port':  8000,
       'https_port': 8443,
     }
   });
