@@ -132,10 +132,12 @@ nms.on('prePublish', (id, StreamPath, args) =>
     "description" : "live streaming tests",
     "localURL"    : path.join(process.env.VIDEO_TEMP,streaming_type,master_playlist_name),
     "remoteURL"   : "https://s3.eu-central-1.amazonaws.com/" + path.posix.join(process.env.S3_UPLOAD_BUCKET,streaming_type, master_playlist_name),
-    "numeroVidei" : 4,
+    "numeroVidei" : 9,
     // "numeroVidei" : parseInt(numero_videi),
     "redux"       : false,
     "reserved"    : false,
+    "streaming_type"       : "live",
+    "LIS"                  : "false",
     "placeHolderImage"     : "images/ColorBars.jpg",
     "liveDurationInfinity" : true,
     "data_di_inizio"       : new Date().getTime()
