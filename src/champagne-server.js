@@ -193,7 +193,8 @@ function findFfmpegLocation()
   let currentOS = os.type();
   console.log('');
   console.log("siamo su %s", currentOS );
-  if      (currentOS == "Darwin")     { return "/usr/local/bin/ffmpeg"}
+  // if      (currentOS == "Darwin")     { return "/usr/local/bin/ffmpeg"}
+  if      (currentOS == "Darwin")     { return "/opt/homebrew/bin/ffmpeg"}
   else if (currentOS == "Windows_NT") { return "C:\\ffmpeg\\bin\\ffmpeg.exe"}
   else if (currentOS == "Linux")      { return "/usr/bin/ffmpeg"}
   else {console.log('porcoddò');}
