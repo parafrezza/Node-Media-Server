@@ -34,11 +34,7 @@ const client = s3Client.createClient(
         s3Options: {
             accessKeyId:     process.env.AWS_ACCESS_KEY,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-            region:          process.env.AWS_REGION,
-            // endpoint: 's3.yourdomain.com',
-            // sslEnabled: false
-            // any other options are passed to new AWS.S3()
-            // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
+            region:          process.env.AWS_REGION
         },
 });
       
@@ -53,12 +49,10 @@ module.exports.upload = (nomeFile) =>
         if(dname==='champagne' || dname === 'champagneRedux')
         { 
             namo  =   path.basename(nomeFile)
-            // namo  = secchio + '/' + path.basename(nomeFile)
         }
         else
         {
             namo  =   dname + '/' + path.basename(nomeFile);
-            // namo  = secchio + '/' + dname + '/' + path.basename(nomeFile);
         }
          const subdir = namo.split('/')[0]
          console.log('l\'upload avverrà su %s', subdir);
@@ -102,7 +96,7 @@ module.exports.createBucketIfItDoNotexist = function (args, colbacca)
         if(ero) throw ero;
         else
         {
-            console.log('i secchioni:\n%o', data.Buckets);
+            // console.log('i secchioni:\n%o', data.Buckets);
             for (let buco of data.Buckets)
             {
                 if(buco.Name === secchio)
@@ -142,27 +136,6 @@ module.exports.createBucketIfItDoNotexist = function (args, colbacca)
 }
 module.exports.resetBucket = function(){weHaveABucket=false;}
 
-module.exports.syncala = function (app, programName, fileName )
-{
-    // fs.readFile(fileName, (err, data) =>
-    // {
-    //     if (err)
-    //     {   
-    //         console.log('mi sa che ho errato provando a leggere i file da syncare:');
-    //         console.log(err)
-    //         throw err;
-    //     }
-    //     let params = {
-    //         Bucket: secchio, // pass your bucket name
-    //         Key: filename, // file will be saved as testBucket/contacts.csv
-    //         // Body: JSON.stringify(data, null, 2)
-    //     };
-    //     s3.upload(params, function(s3Err, data) {
-    //         if (s3Err) throw s3Err
-    //         console.log(`File uploaded successfully at ${data.Location}`)
-    //     });
-    // });
-}
 module.exports.settaLaVideoTemp = function(videoTempDirectory)
 {
     videoTemp = videoTempDirectory;
@@ -174,11 +147,10 @@ module.exports.chiudiIlWatch = function ()
 
 const watchIt = function(args)
 {
- 
-    console.log(args); // mi darà il path dello streaming -> tipo /champagne/dajeforte
-    let localDir = path.join(videoTemp, args.split('/')[1]);
+    console.log("argsomenti per costruire il path: " + args); // mi darà il path dello streaming -> tipo /champagne/dajeforte
+    let localDir  = path.join(videoTemp, args.split('/')[1]);
     let remoteDir = localDir.split(path.sep).pop()
-    console.log('osserverei %s\ne la uploaderei nella directory:\n%s\n\n', localDir, remoteDir);
+    console.log(' osserverei %s\ ne la uploaderei nella directory:\n%s\n\n', localDir, remoteDir);
  
     // Start watching the directory
     const watcher = chokidar.watch(localDir, {
@@ -187,51 +159,55 @@ const watchIt = function(args)
         ignoreInitial: false, // Process files already existing
     });
 
-    let addCount = 0;
+    let addCount    = 0;
     let changeCount = 0;
     let unlinkCount = 0;
 
     // Variables to accumulate counts over a minute
-    let minuteAddCount = 0;
+    let minuteAddCount    = 0;
     let minuteChangeCount = 0;
     let minuteUnlinkCount = 0;
 
     // Counters for uploads
-    let uploadedCount = 0;
+    let uploadedCount       = 0;
     let minuteUploadedCount = 0;
 
     // Counters for deletions from S3
-    let deletedFromS3Count = 0;
+    let deletedFromS3Count       = 0;
     let minuteDeletedFromS3Count = 0;
 
     // **Total counters**
-    let totalAddCount = 0;
-    let totalChangeCount = 0;
-    let totalUnlinkCount = 0;
-    let totalUploadedCount = 0;
+    let totalAddCount           = 0;
+    let totalChangeCount        = 0;
+    let totalUnlinkCount        = 0;
+    let totalUploadedCount      = 0;
     let totalDeletedFromS3Count = 0;
 
     // **Data uploaded counters**
-    let uploadedDataBytes = 0;
+    let uploadedDataBytes       = 0;
     let minuteUploadedDataBytes = 0;
-    let totalUploadedDataBytes = 0;
+    let totalUploadedDataBytes  = 0;
 
     // Counter to keep track of seconds elapsed
     let secondCounter = 0;
 
     watcher
-        .on('add', (filePath) => {
+        .on('add', (filePath) => 
+        {
             addCount++;
             totalAddCount++;
             uploadFile(filePath);
         })
-        .on('change', (filePath) => {
+        .on('change', (filePath) => 
+        {
             changeCount++;
             totalChangeCount++;
             uploadFile(filePath);
         })
-        .on('unlink', (filePath) => {
-            if (process.env.SYNCH_DELETE) {
+        .on('unlink', (filePath) => 
+        {
+            if (process.env.SYNCH_DELETE) 
+                {
                 unlinkCount++;
                 totalUnlinkCount++;
                 deleteFile(filePath);
@@ -364,4 +340,3 @@ const watchIt = function(args)
 
     
 }
-// module.exports.syncala('champagne', 'pool', 'D:\devss\lo studio della tivvuu\web and alike\regieRemote\videoTemp\media\champagne\')

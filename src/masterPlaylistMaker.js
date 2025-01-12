@@ -13,7 +13,7 @@ module.exports.fammeNaPlaylist = function (args,projectDestination,cibba)
   let masterPlaylistText = '#EXTM3U\r\n#EXT-X-VERSION:6\r\n';
   let modello = 'standardFissionModel';
   let redux = false;
-  console.log('\n\%o.\nlocation: %s',arghi, projectDestination);
+  console.log('\n\%o.\nlocation dei file temporanea: %s',arghi, projectDestination);
   console.log('\n\nridotta?    ' + (app.indexOf('Redux')==-1 ? 'Non è ridotta.':'Yes. E\' ridotta'));
   console.log(chalk.green('\nIl programma di oggi, signori, si chiama '+secchiello));
 
@@ -59,7 +59,7 @@ module.exports.fammeNaPlaylist = function (args,projectDestination,cibba)
       else
       {
          console.log(chalk.green('\n\nmaster:\r\n%s\n\n',masterPlaylistText));
-         console.log(chalk.yellow('\nProvo ad uploadarla prendendola da ' + masterPlaylistLocation));
+         console.log(chalk.yellow('\nProvo l\'upload della plmaster playlist prendendola da ' + masterPlaylistLocation));
 
          avvueseTePrego.upload(masterPlaylistLocation);
 

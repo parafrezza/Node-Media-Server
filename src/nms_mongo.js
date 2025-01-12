@@ -5,6 +5,7 @@ const uri             = configs.parsed.MONGO_URI;
 const assert = require("assert");
 const { MongoClient } = require("mongodb");
 const { log } = require('./node_core_logger');
+const { emitWarning } = require('process');
 
 module.exports = 
 {
@@ -41,8 +42,9 @@ module.exports =
             console.log('Nuovo video aggiunto con _id:', risultato.insertedId);
 
             return risultato;
-        } catch (err) {
-            console.error('Errore nell\'aggiungere il nuovo stream:', err);
+        }
+        catch (err) {
+            console.warn('Errore nell\'aggiungere il nuovo stream:', err);
             throw err;
         } finally {
             // Chiude la connessione al database
