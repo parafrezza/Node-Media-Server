@@ -137,9 +137,8 @@ nms.on('prePublish', (id, StreamPath, args) =>
     "redux"       : false,
     "reserved"    : false,
     "streaming_type"       : "live",
-    "LIS"                  : "false",
+    "LIS"                  : "-1",
     "placeHolderImage"     : "images/ColorBars.jpg",
-    "liveDurationInfinity" : true,
     "data_di_inizio"       : new Date().getTime()
   }
   
