@@ -139,6 +139,18 @@ nms.on('prePublish', (id, StreamPath, args) =>
     "streaming_type"       : "live",
     "LIS"                  : "-1",
     "placeHolderImage"     : "images/ColorBars.jpg",
+    "subtitles"            : null,
+    "labels": [
+      "uno",
+      "due",
+      "tre",
+      "quattro",
+      "cinque",
+      "sei",
+      "sette",
+      "otto",
+      "nove"
+  ],
     "data_di_inizio"       : new Date().getTime()
   }
   
