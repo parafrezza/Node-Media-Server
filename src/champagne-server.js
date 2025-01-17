@@ -130,16 +130,16 @@ nms.on('prePublish', (id, StreamPath, args) =>
   {
     "title"       : titolo,
     "description" : "live streaming tests",
+    "stub"        : "live_treaming_tests",
     "localURL"    : path.join(process.env.VIDEO_TEMP,streaming_type,master_playlist_name),
     "remoteURL"   : "https://s3.eu-central-1.amazonaws.com/" + path.posix.join(process.env.S3_UPLOAD_BUCKET,streaming_type, master_playlist_name),
     "numeroVidei" : 9,
-    // "numeroVidei" : parseInt(numero_videi),
     "redux"       : false,
     "reserved"    : false,
     "streaming_type"       : "live",
     "LIS"                  : "-1",
     "placeHolderImage"     : "images/ColorBars.jpg",
-    "subtitles"            : null,
+    "subtitles"            : [null],
     "labels": [
       "uno",
       "due",
@@ -151,7 +151,8 @@ nms.on('prePublish', (id, StreamPath, args) =>
       "otto",
       "nove"
   ],
-    "data_di_inizio"       : new Date().getTime()
+    "data_di_inizio"       : new Date().getTime(),
+    "creator"             : "node-media-server"
   }
   
   if(!isMasterPlaylistDone)
