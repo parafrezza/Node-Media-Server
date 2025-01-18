@@ -4,7 +4,10 @@ const aws      = require('aws-sdk'),
       fs       = require('fs'),
       path     = require('path'),
       chokidar = require('chokidar'),
-      os       = require('os');
+      os       = require('os'),
+      readline = require('readline');
+
+const monitorami      = require('./monitor.js');
 
 const { getInfo } = require('./api/controllers/server');
 const delimiter =  (os.platform()=="win32") ? "\\" : "/";
@@ -26,11 +29,11 @@ const s3Client = require('s3-node-client');
 const { log }  = require('console');
 const client = s3Client.createClient(
     {
-        maxAsyncS3: 10,     // this is the default
-        s3RetryCount: 2,    // this is the default
-        s3RetryDelay: 60, // this is the default
-        multipartUploadThreshold: 20971520, // this is the default (20 MB)
-        multipartUploadSize: 15728640, // this is the default (15 MB)
+        maxAsyncS3: 20,     // this is the default
+        s3RetryCount: 4,    // this is the default
+        s3RetryDelay: 2, // this is the default
+        multipartUploadThreshold: 40971520, // this is the default (20 MB)
+        multipartUploadSize: 30728640, // this is the default (15 MB)
         s3Options: {
             accessKeyId:     process.env.AWS_ACCESS_KEY,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -147,14 +150,32 @@ module.exports.chiudiIlWatch = function ()
 
 const watchIt = function(args)
 {
-    console.log("argsomenti per costruire il path: " + args); // mi darà il path dello streaming -> tipo /champagne/dajeforte
-    let localDir  = path.join(videoTemp, args.split('/')[1]);
-    let remoteDir = localDir.split(path.sep).pop()
+    console.log("argomenti per costruire il path: " + args); // mi darà il path dello streaming -> tipo /champagne/dajeforte
+    let typeFolder    = args.split('/')[1];  // 'champagne', ovvero 'live'
+    let nomeStreaming = args.split('/')[2];
+    let localDir      = path.join(videoTemp, typeFolder);
+    let ignoredDir    = path.join(videoTemp, typeFolder, nomeStreaming); // cartella inutile!
+    let remoteDir     = localDir.split(path.sep).pop()
     console.log(' osserverei %s\ ne la uploaderei nella directory:\n%s\n\n', localDir, remoteDir);
+    console.log(' ignorerei però la directory:\n%s', ignoredDir);
  
     // Start watching the directory
     const watcher = chokidar.watch(localDir, {
-        ignored: /(^|[\/\\])\../, // Ignore dotfiles
+    ignored: filePath => {
+        const normalizedPath = path.normalize(filePath);
+
+        // Ignore dot files
+        const isDotFile = normalizedPath.split(path.sep).some(segment => segment.startsWith('.'));
+        
+        // Ignore .tmp files
+        const isTempFile = normalizedPath.endsWith('.tmp');
+        
+        // Ignore specific path
+        const isIgnoredPath = normalizedPath.endsWith(path.resolve(ignoredDir));
+
+        // Combine all ignore conditions
+        return isDotFile || isTempFile || isIgnoredPath;
+    },
         persistent: true,
         ignoreInitial: false, // Process files already existing
     });
@@ -217,6 +238,25 @@ const watchIt = function(args)
             console.error(`Watcher error: ${error}`);
         });
 
+    // Setup input listener for manual exit
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+    
+    console.log('Press Ctrl+C to exit, or type "exit" and press Enter.');
+    
+    // Listen for input to exit
+    rl.on('line', input => {
+        if (input.trim().toLowerCase() === 'exit') {
+        console.log('Exiting...');
+        watcher.close().then(() => {
+            console.log('Watcher closed.');
+            rl.close(); // Close the readline interface
+            process.exit(0); // Exit the process
+        });
+        }
+    });
     // Log counts every second and accumulate for minute average
     const intervalId = setInterval(() => {
         if (
@@ -232,6 +272,7 @@ const watchIt = function(args)
                 `Files added: ${addCount}, changed: ${changeCount}, removed: ${unlinkCount}, uploaded: ${uploadedCount}, deleted from S3: ${deletedFromS3Count}, data uploaded: ${uploadedDataMegabits.toFixed(2)} Mb`
             );
         }
+       
 
         // Accumulate counts for minute average
         minuteAddCount           += addCount;
@@ -271,6 +312,7 @@ const watchIt = function(args)
             console.log(
                 `Files added: ${totalAddCount}, changed: ${totalChangeCount}, removed: ${totalUnlinkCount}, uploaded: ${totalUploadedCount}, deleted from S3: ${totalDeletedFromS3Count}, total data uploaded: ${totalUploadedDataMegabits.toFixed(2)} Mb\n`
             );
+            // if (totalUploadedCount>10) {monitorami.startMonitoring(localDir,8);}
 
             // Reset minute counters and second counter
             minuteAddCount           = 0;

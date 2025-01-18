@@ -120,7 +120,7 @@ nms.on('prePublish', (id, StreamPath, args) =>
 {
   console.log('[NodeEvent on prePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
   
-  console.log('mi piacerebbe creare un record sul DB per questo tuo nuovo sfavillante stream usando i dati %s ', StreamPath)
+  console.log('Creo un record sul DB per questo nuovo stream usando i dati %s ', StreamPath)
   let streaming_type        = StreamPath.split('/')[1];  //l'ultimo identificativo della stringa di streaming -> champagne = live
   let streaming_key         = StreamPath.split('/')[2];
   let titolo                = streaming_key
@@ -135,7 +135,7 @@ nms.on('prePublish', (id, StreamPath, args) =>
     "remoteURL"   : "https://s3.eu-central-1.amazonaws.com/" + path.posix.join(process.env.S3_UPLOAD_BUCKET,streaming_type, master_playlist_name),
     "numeroVidei" : 9,
     "redux"       : false,
-    "reserved"    : false,
+    "reserved"    : true,
     "streaming_type"       : "live",
     "LIS"                  : "-1",
     "placeHolderImage"     : "images/ColorBars.jpg",
@@ -151,7 +151,7 @@ nms.on('prePublish', (id, StreamPath, args) =>
       "otto",
       "nove"
   ],
-    "data_di_inizio"       : new Date().getTime(),
+    "data_di_inizio"      : new Date().getTime(),
     "creator"             : "node-media-server"
   }
   
@@ -172,15 +172,14 @@ nms.on('prePublish', (id, StreamPath, args) =>
         });
       }
     });
-    monitorami.startMonitoring(location);
     console.log('i dati che scriverei su Mongo sono:\n %s ', dati_del_nuovo_fantastico_streaming)
 
     mongo.setNewLiveStream(dati_del_nuovo_fantastico_streaming)
       .catch(console.dir)
-      .finally(()=>
-      {
-        console.log('\'ica lo so come è andata');
-      });
+      // .finally(()=>
+      // {
+      //   console.log('\'ica lo so come è andata');
+      // });
   }
 });
 nms.on('postPublish', (id, StreamPath, args) => {
@@ -219,7 +218,11 @@ function findFfmpegLocation()
     console.log(chalk.blue('Development!'));
     return false;
   }
-  else {return true;}
+  else
+  {
+    console.log(chalk.red('Production!'));
+    return true;
+  }
 })()
 
 /*
