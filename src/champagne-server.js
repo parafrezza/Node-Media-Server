@@ -133,7 +133,7 @@ nms.on('prePublish', (id, StreamPath, args) =>
     "stub"        : "live_treaming_tests",
     "localURL"    : path.join(process.env.VIDEO_TEMP,streaming_type,master_playlist_name),
     "remoteURL"   : "https://s3.eu-central-1.amazonaws.com/" + path.posix.join(process.env.S3_UPLOAD_BUCKET,streaming_type, master_playlist_name),
-    "numeroVidei" : 9,
+    "numeroVidei" : 4,
     "redux"       : false,
     "reserved"    : true,
     "streaming_type"       : "live",
@@ -152,7 +152,10 @@ nms.on('prePublish', (id, StreamPath, args) =>
       "nove"
   ],
     "data_di_inizio"      : new Date().getTime(),
-    "creator"             : "node-media-server"
+    "creator"             : "node-media-server",
+    "landing_page"        : false,
+    "future"              : false,
+    "isActive"            : true
   }
   
   if(!isMasterPlaylistDone)
