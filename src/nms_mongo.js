@@ -17,9 +17,9 @@ module.exports =
             // Connessione al server
             await client.connect();
             console.log('Connessione a MongoDB riuscita');
-            console.log('Ci scrivo il documneo:');
+            console.log('Ci scrivo il documnento:');
             console.log(strimmo);
-            let documentoEsistente = '';
+            let documentoEsistente = null;
             const db         = client.db(configs.parsed.MONGODB_INSTANCE);
             const collection = db.collection(configs.parsed.MONGODB_VIDEO_COLLECTION);
             // Verifica se esiste già un documento con lo stesso 'title'
@@ -27,16 +27,15 @@ module.exports =
             {
                 documentoEsistente = await collection.findOne({ title:strimmo.title});
             }
-                catch(ero)
-                {
-                    console.log('ero cercando documenti esistenti!');
-                    console.log(ero);
-                    
+            catch(ero)
+            {
+                console.log('ero cercando documenti esistenti!');
+                console.log(ero);
             }
             if (documentoEsistente) {
                 // Se il documento esiste già, lancia un errore
-                throw new Error(`Un documento con il titolo "${strimmo.title}" esiste già.`);
-              }
+                throw new Warning(`Un documento con il titolo "${strimmo.title}" esiste già.`);
+            }
             // Inserimento del nuovo documento
             const risultato = await collection.insertOne(strimmo);
             console.log('Nuovo video aggiunto con _id:', risultato.insertedId);
