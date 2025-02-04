@@ -155,9 +155,9 @@ const watchIt = function(args)
     let nomeStreaming = args.split('/')[2];
     let localDir      = path.join(videoTemp, typeFolder);
     let ignoredDir    = path.join(videoTemp, typeFolder, nomeStreaming); // cartella inutile!
-    let remoteDir     = localDir.split(path.sep).pop()
-    console.log(' osserverei %s\ ne la uploaderei nella directory:\n%s\n\n', localDir, remoteDir);
-    console.log(' ignorerei però la directory:\n%s', ignoredDir);
+    let remoteDir     = localDir.split(path.sep).pop(); // 'champagne'
+    console.log('osserverei %s\ e la uploaderei nella directory:\n%s/%s\n', localDir, process.env.S3_UPLOAD_BUCKET, remoteDir);
+    console.log('ignorerei però la directory:\n%s', ignoredDir);
  
     // Start watching the directory
     const watcher = chokidar.watch(localDir, {

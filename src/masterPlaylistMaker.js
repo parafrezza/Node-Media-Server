@@ -61,7 +61,7 @@ module.exports.fammeNaPlaylist = function (args,projectDestination,cibba)
          console.log(chalk.green('\n\nmaster:\r\n%s\n\n',masterPlaylistText));
          console.log(chalk.yellow('\nProvo l\'upload della plmaster playlist prendendola da ' + masterPlaylistLocation));
 
-         avvueseTePrego.upload(masterPlaylistLocation);
+        //  avvueseTePrego.upload(masterPlaylistLocation);
 
          cibba(true);
       }

@@ -43,8 +43,7 @@ module.exports =
             return risultato;
         }
         catch (err) {
-            console.warn('Errore nell\'aggiungere il nuovo stream:', err);
-            throw err;
+            throw emitWarning(`Non è stato aggiunto "${strimmo.title}" al DB.`);
         } finally {
             // Chiude la connessione al database
             await client.close();
@@ -60,18 +59,3 @@ module.exports =
     con mongosh:
     db.videi.find({ "title": { $regex: "^demo" } })
 */
-
-
-
-// { title: 'ciao',
-//     "description": 'live streaming tests',
-//     "localURL": '/Users/riccardofrezza/Desktop/video_temp/champagne/ciao_5.m3u8',
-//     "remoteURL": 'https://s3.eu-central-1.amazonaws.com/extratech.live.dev/champagne/ciao_5.m3u8',
-//     "numeroVidei": 4,
-//     "redux": false,
-//     "reserved": false,
-//     "placeHolderImage": 'images/ColorBars.jpg',
-//     "liveDurationInfinity": true,
-//     "data_di_inizio": 1728141552944
-//   }
-

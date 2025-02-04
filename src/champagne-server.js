@@ -175,14 +175,9 @@ nms.on('prePublish', (id, StreamPath, args) =>
         });
       }
     });
-    console.log('i dati che scriverei su Mongo sono:\n %s ', dati_del_nuovo_fantastico_streaming)
+    // console.log('i dati che scriverei su Mongo sono:\n %s ', dati_del_nuovo_fantastico_streaming)
 
-    mongo.setNewLiveStream(dati_del_nuovo_fantastico_streaming)
-      .catch(console.dir)
-      // .finally(()=>
-      // {
-      //   console.log('\'ica lo so come è andata');
-      // });
+    mongo.setNewLiveStream(dati_del_nuovo_fantastico_streaming).catch(console.dir)
   }
 });
 nms.on('postPublish', (id, StreamPath, args) => {
@@ -211,7 +206,7 @@ function findFfmpegLocation()
   if      (currentOS == "Darwin")     { return "/opt/homebrew/bin/ffmpeg"}
   else if (currentOS == "Windows_NT") { return "C:\\ffmpeg\\bin\\ffmpeg.exe"}
   else if (currentOS == "Linux")      { return "/usr/bin/ffmpeg"}
-  else {console.log('porcoddò');}
+  else {console.log('porcoddue, dov\'è FFMPEG?');}
 }
 (function areWeProducing()
 {
@@ -240,14 +235,4 @@ function findFfmpegLocation()
 #EXT-X-STREAM-INF:BANDWIDTH=1100000,AVERAGE-BANDWIDTH=1000000,RESOLUTION=854x480,CLOSED-CAPTIONS=NONE,CODECS="avc1.42e00a,mp4a.40.2"
 /media/champagne/feed1_480/index.m3u8
 */
-
-// pkg chinaMediaServer node12-win-x64, node12-macos-x64
-//C:\Program Files\Apache24\bin> .\httpd.exe
-
-/*
- ssh -i "coppiaEC2extratech.pem" bitnami@ec2-18-198-127-231.eu-central-1.compute.amazonaws.com
-
-
-
-
-*/
+ 
