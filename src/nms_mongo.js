@@ -34,7 +34,7 @@ module.exports =
             }
             if (documentoEsistente) {
                 // Se il documento esiste già, lancia un errore
-                throw new Warning(`Un documento con il titolo "${strimmo.title}" esiste già.`);
+                throw emitWarning(`Un documento con il titolo "${strimmo.title}" esiste già.`);
             }
             // Inserimento del nuovo documento
             const risultato = await collection.insertOne(strimmo);
