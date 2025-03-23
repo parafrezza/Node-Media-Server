@@ -29,11 +29,11 @@ const s3Client = require('s3-node-client');
 const { log }  = require('console');
 const client = s3Client.createClient(
     {
-        maxAsyncS3: 20,     // this is the default
-        s3RetryCount: 4,    // this is the default
-        s3RetryDelay: 2, // this is the default
-        multipartUploadThreshold: 40971520, // this is the default (20 MB)
-        multipartUploadSize: 30728640, // this is the default (15 MB)
+        maxAsyncS3: 40,     // this is the default
+        s3RetryCount: 10,    // this is the default
+        s3RetryDelay: 1, // this is the default
+        multipartUploadThreshold: 40971520, // default is 20 MB
+        multipartUploadSize: 30728640, //  default is 15 MB
         s3Options: {
             accessKeyId:     process.env.AWS_ACCESS_KEY,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,

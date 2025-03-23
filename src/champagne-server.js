@@ -139,7 +139,7 @@ nms.on('prePublish', (id, StreamPath, args) =>
     "streaming_type"       : "live",
     "LIS"                  : "-1",
     "placeHolderImage"     : "images/ColorBars.jpg",
-    "subtitles"            : [null],
+    "subtitles"            : ["null"],
     "labels": [
       "uno",
       "due",
@@ -155,7 +155,9 @@ nms.on('prePublish', (id, StreamPath, args) =>
     "creator"             : "node-media-server",
     "landing_page"        : false,
     "future"              : false,
-    "isActive"            : true
+    "isActive"            : true,
+    "is_chat"             : true,
+    "private"             : true
   }
   
   if(!isMasterPlaylistDone)

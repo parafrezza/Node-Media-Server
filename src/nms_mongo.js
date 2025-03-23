@@ -17,7 +17,7 @@ module.exports =
             // Connessione al server
             await client.connect();
             console.log('Connessione a MongoDB riuscita');
-            console.log('Ci scrivo il documnento:');
+            console.log('Ci scrivo il documento:');
             console.log(strimmo);
             let documentoEsistente = null;
             const db         = client.db(configs.parsed.MONGODB_INSTANCE);
