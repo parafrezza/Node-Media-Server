@@ -17,6 +17,10 @@ const isHlsFile  = (filename) => filename.endsWith('.ts') || filename.endsWith('
 const isTemFiles = (filename) => filename.endsWith('.tmp')
 const isDashFile = (filename) => filename.endsWith('.mpd') || filename.endsWith('.m4s')
 
+const isHlsFile = (filename) => filename.endsWith('.ts') || filename.endsWith('.m3u8')
+const isTemFiles = (filename) => filename.endsWith('.tmp')
+const isDashFile = (filename) => filename.endsWith('.mpd') || filename.endsWith('.m4s')
+
 class NodeTransSession extends EventEmitter {
   constructor(conf) {
     super();
